@@ -13,11 +13,12 @@ import java.util.*;
 public class Problem2 {
     static BitSet is_checked = new BitSet(1000000010);
     static BitSet bm_primes = new BitSet(1000000010);
-    static int last_caculated = 2;
+    static int start_from = 2;
     public static void main(String[] args) {
+        //
         Scanner in = new Scanner(System.in);
-
-
+        StringBuffer result_string = new StringBuffer();
+        // Get Inputs
         int q_count = 0;
         q_count = in.nextInt();
         int[] start_num = new int[q_count];
@@ -29,21 +30,22 @@ public class Problem2 {
         }
 
 
+        // 0 and 1 are not prime
+        bm_primes.set(0);
+        bm_primes.set(1);
 
+        // Start caculate prime
         for(int m = 0; m < q_count; m++ ){
-            // start_num = in.nextInt();
-            // end_num = in.nextInt();
-            bm_primes.clear(0);
-            bm_primes.clear(1);
+            if (m > 0){
+                System.out.println("");
+                // result_string.append("\n");
+            }
             int i_end = end_num[m] * 2;
-            // ArrayList<Integer> i_primes = new ArrayList<>(10000000);
-            if(2 != end_num[m] && i_end > last_caculated){
+
+            if(2 != end_num[m] && i_end > start_from){
                 double sqrt_end_num =  Math.sqrt(i_end);
-                for(int i= last_caculated;i<= sqrt_end_num;i++ ){
+                for(int i= start_from;i<= sqrt_end_num;i++ ){
                     if(!bm_primes.get(i)){
-                        // for(int j = i *i; i<= i_end;j = j + i){
-                        //     bm_primes.set(j);
-                        // }
                         for(int k = (i_end - 1)/i, j = i*k ; k>=i ; k--, j-=i){
                             if(!bm_primes.get(k)){
                                 bm_primes.set(j);
@@ -51,18 +53,44 @@ public class Problem2 {
                         }
                     }
                 }
-                last_caculated = i_end;
+                start_from = i_end;
             }
-
+            if( start_num[m] < 2){
+                start_num[m] = 2;
+            }
             for(int i=start_num[m];i<=end_num[m];i++){
                 if(!bm_primes.get(i)){
-                    System.out.println(i);
+                    System.out.println(i + " " + is_prime(i));
                 }
             }
-            System.out.println("");
         }
+    }
 
+    private static boolean is_prime(int n){
+      if (n == 2) return true;
+      if(n < 2 || n % 2 == 0) return false;
+      int u = n - 1, t = 0;
+      while(u%2==0){u>>=1;t++;}
 
+      int[] sprp = {2, 7, 61};
+      for(int k = 0; k<3; k++){
+        int a = sprp[k] % n;
+        if(a == 0 || a == 1 || a == n-1) continue;
+        int x = 1;
+          for(int p = 0;p < u ;p++){
+            x = x * a % n;
+          }
+        if(x == 1 || x ==n-1) continue;
+
+        for(int i=0;i< t-1;i++){
+          x = x * x % n;
+          if(x==1) return false;
+          if(x == n-1) break;
+        }
+        if(x == n-1) continue;
+        return false;
+      }
+      return true;
     }
 
 }
